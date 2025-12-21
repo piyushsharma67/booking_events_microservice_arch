@@ -1,0 +1,13 @@
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+#installing air for hot reload
+RUN go install github.com/air-verse/air@latest
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+CMD ["air"]

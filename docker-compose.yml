@@ -23,12 +23,8 @@ services:
       DB_PASSWORD: auth_password
       DB_NAME: auth_db
       DB_SSLMODE: disable
-
-  booking-service:
-    build: ./services/booking_service
-    container_name: booking_service
-    ports:
-      - "8002:8002"
+      JWT_SECRET: sdf23423adsd
+  
   auth-db:
     image: postgres:16
     container_name: auth-db
@@ -40,5 +36,40 @@ services:
       - "5433:5432" # optional, for host access
     volumes:
       - auth-db-data:/var/lib/postgresql/data
+
+  movie-service:
+    build: ./services/movies_service
+    container_name: movies_service
+    ports:
+      - "8003:8003"
+    depends_on:
+      - movies-db
+    environment:
+      DB_HOST: movies-db
+      DB_PORT: "5432"
+      DB_USER: movies_user
+      DB_PASSWORD: movies_password
+      DB_NAME: movies_db
+      DB_SSLMODE: disable
+  movies-db:
+    image: postgres:16
+    container_name: movies-db
+    environment:
+      POSTGRES_USER: movies_user
+      POSTGRES_PASSWORD: movies_password
+      POSTGRES_DB: movies_db
+    ports:
+      - "5433:5432" # optional, for host access
+    volumes:
+      - movies-db-data:/var/lib/postgresql/data
+  
+  booking-service:
+    build: ./services/booking_service
+    container_name: booking_service
+    ports:
+      - "8002:8002"
+
+  
 volumes:
   auth-db-data:
+  movies-db-data:

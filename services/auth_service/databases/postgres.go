@@ -40,7 +40,7 @@ func InitPostgres() (*pgxpool.Pool, *postgresdb.Queries) {
 
 	// Wait until Postgres is ready
 	if err := pool.Ping(context.Background()); err != nil {
-		slog.Error("failed to connect to postgres:", err)
+		slog.Error("failed to connect to postgres:", "err",err)
 		os.Exit(1)
 	}
 
@@ -57,7 +57,7 @@ func InitPostgres() (*pgxpool.Pool, *postgresdb.Queries) {
 			continue
 		}
 		if _, err := pool.Exec(context.Background(), stmt); err != nil {
-			slog.Error("failed to execute statement:", err, "stmt", stmt)
+			slog.Error("failed to execute statement:", "err",err, "stmt", stmt)
 			panic(err)
 		}
 	}

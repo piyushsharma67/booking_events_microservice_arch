@@ -41,6 +41,10 @@ func SignUpHandler(db databases.Database) gin.HandlerFunc {
 
 		jwt, err := utils.GenerateJWT(user.ID, user.Email, user.Role, os.Getenv("JWT_SECRET"))
 		if err != nil {
+			if strings.Contains(err.Error(), "UNIQUE") {
+				g.JSON(http.StatusConflict, gin.H{"error": "email already exists"})
+				return
+			}
 			g.JSON(http.StatusInternalServerError, gin.H{"error": "could not generate token"})
 			return
 		}
