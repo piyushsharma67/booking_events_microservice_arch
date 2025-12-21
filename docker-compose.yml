@@ -1,0 +1,44 @@
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:80"
+    depends_on:
+      - auth-service
+      - booking-service
+
+  auth-service:
+    build: ./services/auth_service
+    volumes:
+    - ./services/auth_service:/app
+    container_name: auth_service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - auth-db
+    environment:
+      DB_HOST: auth-db
+      DB_PORT: "5432"
+      DB_USER: auth_user
+      DB_PASSWORD: auth_password
+      DB_NAME: auth_db
+      DB_SSLMODE: disable
+
+  booking-service:
+    build: ./services/booking_service
+    container_name: booking_service
+    ports:
+      - "8002:8002"
+  auth-db:
+    image: postgres:16
+    container_name: auth-db
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+      POSTGRES_DB: auth_db
+    ports:
+      - "5433:5432" # optional, for host access
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+volumes:
+  auth-db-data:
