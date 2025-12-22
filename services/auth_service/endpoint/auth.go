@@ -14,9 +14,7 @@ func MakeSignUpEndpoint(svc service.AuthService) endpoint.Endpoint {
 
 		user, err := svc.SignUp(ctx, *req)
 		if err != nil {
-			return struct {
-				Err string `json:"error"`
-			}{Err: err.Error()}, nil
+			return nil,err
 		}
 		return user, nil // your SQLC User struct can be returned directly
 	}
@@ -27,9 +25,7 @@ func MakeLoginEndpoint(svc service.AuthService) endpoint.Endpoint {
 		req := request.(*models.User)
 		user, err := svc.Login(ctx, *req)
 		if err != nil {
-			return struct {
-				Err string `json:"error"`
-			}{Err: err.Error()}, nil
+			return nil,err
 		}
 		return user, nil // your SQLC User struct can be returned directly
 	}

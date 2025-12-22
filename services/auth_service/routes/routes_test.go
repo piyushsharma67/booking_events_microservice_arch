@@ -39,7 +39,7 @@ func TestSignupAPI_SQLite(t *testing.T) {
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusRequestTimeout, w.Code)
+	assert.Equal(t, http.StatusOK, w.Code)
 	// assert.Contains(t, w.Body.String(), `"role":"user"`)
 	assert.NotContains(t, w.Body.String(), `"password":"password123"`)
 }

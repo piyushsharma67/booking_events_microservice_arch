@@ -2,10 +2,11 @@ package transport
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-kit/kit/endpoint"
@@ -18,22 +19,20 @@ func GinHandler(e endpoint.Endpoint, newRequest func() interface{}) gin.HandlerF
 		var request interface{}
 		request = newRequest()
 
-		if err := c.ShouldBindBodyWithJSON(request); err != nil {
+		if err := c.ShouldBindJSON(request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx,cancel:= context.WithTimeout(c,1*time.Second)
-
-		if ctx.Err() == context.DeadlineExceeded {
-			c.JSON(http.StatusRequestTimeout, gin.H{"error": "request timed out"})
-			return
-		}
-		defer cancel()
 		// Call the Go Kit endpoint
-		resp, err := e(ctx, request)
+		resp, err := e(c, request)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			fmt.Println("Error is ****", err.Error())
+			if errors.Is(err, context.DeadlineExceeded) {
+				c.JSON(http.StatusRequestTimeout, gin.H{"error": "request timed out"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error processing request"})
 			return
 		}
 

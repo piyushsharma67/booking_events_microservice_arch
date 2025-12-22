@@ -21,6 +21,8 @@ func NewSqliteDB(db *sql.DB) Database {
 
 var (
 	sharedDB *sql.DB
+
+	// 3. Insert i
 	once     sync.Once
 )
 
@@ -51,21 +53,27 @@ func InitSharedSqliteTestDB() *sql.DB {
 }
 
 func (s *SqliteDb) InsertUser(ctx context.Context, user *models.User) error {
-	time.Sleep(4*time.Second)
-	_, err := s.db.ExecContext(ctx,
-		`INSERT INTO users (name, email, password_hash, role)
-		 VALUES (?, ?, ?, ?)`,
-		user.Name,
-		user.Email,
-		user.PasswordHash,
-		user.Role,
-	)
-	return err
+	// Timer to simulate slow DB
+	simulateSlow := time.NewTimer(0 * time.Second)
+	defer simulateSlow.Stop()
+
+	select {
+	case <-simulateSlow.C:
+		// Actual DB insert with context
+		_, err := s.db.ExecContext(ctx,
+			`INSERT INTO users (name, email, password_hash, role)
+			 VALUES (?, ?, ?, ?)`,
+			user.Name, user.Email, user.PasswordHash, user.Role,
+		)
+		return err
+	case <-ctx.Done():
+		// Context canceled or timed out
+		return ctx.Err()
+	}
 }
 
 func (s *SqliteDb) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	u := &models.User{}
-	time.Sleep(4*time.Second)
 	err := s.db.QueryRowContext(ctx,
 		`SELECT id, name, email, password_hash, role
 		 FROM users WHERE email = ?`,

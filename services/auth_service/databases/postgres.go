@@ -90,16 +90,25 @@ func splitSQLStatements(sql string) []string {
 	}
 	return stmts
 }
-
 func (s *SqlDb) InsertUser(ctx context.Context, user *models.User) error {
-	time.Sleep(2 * time.Second)
-	_, err := s.queries.CreateUser(ctx, postgresdb.CreateUserParams{
-		Name:         user.Name,
-		Email:        user.Email,
-		PasswordHash: user.PasswordHash,
-		Role:         user.Role,
-	})
-	return err
+	// Timer to simulate slow DB
+	simulateSlow := time.NewTimer(4 * time.Second)
+	defer simulateSlow.Stop()
+
+	select {
+	case <-simulateSlow.C:
+		// Actual DB insert
+		_, err := s.queries.CreateUser(ctx, postgresdb.CreateUserParams{
+			Name:         user.Name,
+			Email:        user.Email,
+			PasswordHash: user.PasswordHash,
+			Role:         user.Role,
+		})
+		return err
+	case <-ctx.Done():
+		// Context timeout or cancellation
+		return context.DeadlineExceeded
+	}
 }
 
 func (s *SqlDb) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
