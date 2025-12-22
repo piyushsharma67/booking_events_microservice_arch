@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/piyushsharma67/movie_booking/services/auth_service/models"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/postgresdb"
 )
 
@@ -40,7 +41,7 @@ func InitPostgres() (*pgxpool.Pool, *postgresdb.Queries) {
 
 	// Wait until Postgres is ready
 	if err := pool.Ping(context.Background()); err != nil {
-		slog.Error("failed to connect to postgres:", "err",err)
+		slog.Error("failed to connect to postgres:", "err", err)
 		os.Exit(1)
 	}
 
@@ -57,7 +58,7 @@ func InitPostgres() (*pgxpool.Pool, *postgresdb.Queries) {
 			continue
 		}
 		if _, err := pool.Exec(context.Background(), stmt); err != nil {
-			slog.Error("failed to execute statement:", "err",err, "stmt", stmt)
+			slog.Error("failed to execute statement:", "err", err, "stmt", stmt)
 			panic(err)
 		}
 	}
@@ -89,7 +90,7 @@ func splitSQLStatements(sql string) []string {
 	return stmts
 }
 
-func (s *SqlDb) InsertUser(ctx context.Context, user *User) error {
+func (s *SqlDb) InsertUser(ctx context.Context, user *models.User) error {
 	_, err := s.queries.CreateUser(ctx, postgresdb.CreateUserParams{
 		Name:         user.Name,
 		Email:        user.Email,
@@ -99,13 +100,13 @@ func (s *SqlDb) InsertUser(ctx context.Context, user *User) error {
 	return err
 }
 
-func (s *SqlDb) GetUserByEmail(ctx context.Context, email string) (User, error) {
+func (s *SqlDb) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	u, err := s.queries.GetUserByEmail(ctx, email)
 	if err != nil {
-		return User{}, err
+		return nil, err
 	}
 
-	return User{
+	return &models.User{
 		ID:           strconv.Itoa(int(u.ID)),
 		Name:         u.Name,
 		Email:        u.Email,

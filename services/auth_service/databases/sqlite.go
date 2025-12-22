@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/piyushsharma67/movie_booking/services/auth_service/models"
 )
 
 type SqliteDb struct {
@@ -22,7 +23,7 @@ func NewSqliteDB(db *sql.DB) Database {
 	return &SqliteDb{db: db}
 }
 
-func InitSqliteTestDB() (Database, error) {
+func InitSqliteTestDB() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		return nil, err
@@ -41,20 +42,10 @@ func InitSqliteTestDB() (Database, error) {
 		return nil, err
 	}
 
-	return NewSqliteDB(db), nil
+	return db, nil
 }
 
-func GetTestDB() Database {
-	once.Do(func() {
-		testDB, err = InitSqliteTestDB()
-		if err != nil {
-			panic(err)
-		}
-	})
-	return testDB
-}
-
-func (s *SqliteDb) InsertUser(ctx context.Context, user *User) error {
+func (s *SqliteDb) InsertUser(ctx context.Context, user *models.User) error {
 	_, err := s.db.ExecContext(ctx,
 		`INSERT INTO users (name, email, password_hash, role)
 		 VALUES (?, ?, ?, ?)`,
@@ -66,8 +57,8 @@ func (s *SqliteDb) InsertUser(ctx context.Context, user *User) error {
 	return err
 }
 
-func (s *SqliteDb) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	var u User
+func (s *SqliteDb) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+	var u *models.User
 	err := s.db.QueryRowContext(ctx,
 		`SELECT id, name, email, password_hash, role
 		 FROM users WHERE email = ?`,
