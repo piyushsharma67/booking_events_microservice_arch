@@ -11,17 +11,14 @@ import (
 	"github.com/piyushsharma67/movie_booking/services/auth_service/utils"
 )
 
-type AuthService interface {
-	SignUp(ctx context.Context, user models.User) (models.User, error)
-	Login(ctx context.Context, user models.User) (models.User, error)
-}
+
 
 type authService struct {
 	repo *repository.UserRepository
-	notifier *Notifier
+	notifier Notifier
 }
 
-func NewAuthService(repo *repository.UserRepository,notifier *Notifier) AuthService {
+func NewAuthService(repo *repository.UserRepository,notifier Notifier) AuthService {
 	return &authService{repo: repo,notifier: notifier}
 }
 

@@ -32,3 +32,8 @@ func NewRabbitMQNotifier(conn *amqp.Connection, queue string) (*MessageBrokerSer
 
 	return &MessageBrokerService{ch: ch, que: queue}, nil
 }
+
+func (r *MessageBrokerService) SendNotification(to, subject, body string) error {
+    // publish to RabbitMQ
+    return nil
+}
