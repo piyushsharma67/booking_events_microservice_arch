@@ -2,7 +2,6 @@ package endpoint
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/models"
@@ -28,7 +27,6 @@ func MakeLoginEndpoint(svc service.AuthService) endpoint.Endpoint {
 		req := request.(*models.User)
 		user, err := svc.Login(ctx, *req)
 		if err != nil {
-			fmt.Println("**",err)
 			return struct {
 				Err string `json:"error"`
 			}{Err: err.Error()}, nil
@@ -42,7 +40,6 @@ func MakeValidateEndpoint(svc service.AuthService) endpoint.Endpoint {
 		req := request.(*models.User)
 		user, err := svc.Login(ctx, *req)
 		if err != nil {
-			fmt.Println("**",err)
 			return struct {
 				Err string `json:"error"`
 			}{Err: err.Error()}, nil
@@ -50,5 +47,3 @@ func MakeValidateEndpoint(svc service.AuthService) endpoint.Endpoint {
 		return user, nil // your SQLC User struct can be returned directly
 	}
 }
-
-

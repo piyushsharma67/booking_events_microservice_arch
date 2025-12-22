@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"os"
-	"time"
 
 	"github.com/piyushsharma67/movie_booking/services/auth_service/databases"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/models"
@@ -39,12 +38,9 @@ func (s *authService) SignUp(ctx context.Context, user models.User) (models.User
 		PasswordHash: hashedPassword,
 		Role:         "user",
 	}
-	ctxNew, cancel := context.WithTimeout(ctx, 1*time.Second)
-
-	defer cancel()
 
 	// 3. Insert into DB
-	if err := s.repo.InsertUser(ctxNew, userDB); err != nil {
+	if err := s.repo.InsertUser(ctx, userDB); err != nil {
 		return models.User{}, err
 	}
 

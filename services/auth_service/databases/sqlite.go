@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"sync"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/models"
@@ -50,6 +51,7 @@ func InitSharedSqliteTestDB() *sql.DB {
 }
 
 func (s *SqliteDb) InsertUser(ctx context.Context, user *models.User) error {
+	time.Sleep(4*time.Second)
 	_, err := s.db.ExecContext(ctx,
 		`INSERT INTO users (name, email, password_hash, role)
 		 VALUES (?, ?, ?, ?)`,
@@ -63,6 +65,7 @@ func (s *SqliteDb) InsertUser(ctx context.Context, user *models.User) error {
 
 func (s *SqliteDb) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	u := &models.User{}
+	time.Sleep(4*time.Second)
 	err := s.db.QueryRowContext(ctx,
 		`SELECT id, name, email, password_hash, role
 		 FROM users WHERE email = ?`,
