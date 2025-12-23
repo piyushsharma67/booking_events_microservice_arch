@@ -71,6 +71,7 @@ func main() {
 
 	go func() {
 		for d := range msgs {
+			log.Printf("Received message: %s", d.Body)
 			var notif Notification
 			if err := json.Unmarshal(d.Body, &notif); err != nil {
 				log.Printf("Failed to parse message: %v", err)

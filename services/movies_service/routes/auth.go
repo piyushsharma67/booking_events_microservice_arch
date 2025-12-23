@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -35,6 +36,7 @@ func SignUpHandler(db databases.Database) gin.HandlerFunc {
 		}
 
 		if err := db.InsertUser(g.Request.Context(), user); err != nil {
+			fmt.Println("Error inserting user:", err)
 			g.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}

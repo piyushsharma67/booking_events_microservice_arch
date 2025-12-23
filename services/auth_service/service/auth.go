@@ -87,6 +87,11 @@ func (s *authService) Login(ctx context.Context, user models.User) (models.User,
 		return models.User{}, err
 	}
 
+	err=s.notifier.SendNotification(userDB.Email,"Login Alert",fmt.Sprintf("Hi %s, You have successfully logged in.", userDB.Name))
+
+	if err!=nil{
+		return models.User{},nil
+	}
 	// 4. Return response (NO password/hash)
 	return models.User{
 		ID:    userDB.ID,
@@ -98,5 +103,6 @@ func (s *authService) Login(ctx context.Context, user models.User) (models.User,
 }
 
 func (s *authService)Notifier(ctx context.Context,user models.User)error{
+	fmt.Println("i am called")
 	return s.notifier.SendNotification(user.Email,"Welcome",fmt.Sprintf("Hi %s Welome to the Booking Application", user.Name))
 }
