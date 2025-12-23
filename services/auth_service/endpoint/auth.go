@@ -27,6 +27,7 @@ func MakeLoginEndpoint(svc service.AuthService) endpoint.Endpoint {
 		if err != nil {
 			return nil,err
 		}
+
 		return user, nil // your SQLC User struct can be returned directly
 	}
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/piyushsharma67/movie_booking/services/auth_service/databases"
@@ -94,4 +95,8 @@ func (s *authService) Login(ctx context.Context, user models.User) (models.User,
 		Role:  userDB.Role,
 		Token: token,
 	}, nil
+}
+
+func (s *authService)Notifier(ctx context.Context,user models.User)error{
+	return s.notifier.SendNotification(user.Email,"Welcome",fmt.Sprintf("Hi %s Welome to the Booking Application", user.Name))
 }
