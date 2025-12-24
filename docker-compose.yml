@@ -78,6 +78,12 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+    environment:
+      - RABBITMQ_QUEUE=notifications
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
 
   rabbitmq:
     image: rabbitmq:3-management
