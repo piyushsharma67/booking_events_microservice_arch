@@ -27,6 +27,11 @@ func NewAuthService(repo *repository.UserRepository,notifier Notifier,logger log
 
 func (s *authService) SignUp(ctx context.Context, user models.User) (models.User, error) {
 	// 1. Hash password
+	log := s.logger.WithContext(ctx)
+
+	log.Info("Signup started",
+		"user", user.Name,
+	)
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
 		return models.User{}, err
@@ -67,12 +72,12 @@ func (s *authService) SignUp(ctx context.Context, user models.User) (models.User
 }
 
 func (s *authService) Login(ctx context.Context, user models.User) (models.User, error) {
-	// reqID, _ := ctx.Value("request_id").(string)
+	reqID, _ := ctx.Value("request_id").(string)
 
-	// s.logger.Info("login request",
-	// 	"request_id", reqID,
-	// 	"user", req.Username,
-	// )
+	s.logger.Info("login request",
+		"request_id", reqID,
+		"user", user.Name,
+	)
 	// 1. Fetch user from DB
 	userDB, err := s.repo.GetUserByEmail(ctx, user.Email)
 	if err != nil {

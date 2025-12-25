@@ -26,7 +26,7 @@ func setupSharedTestServer() *gin.Engine {
 	svc := service.NewAuthService(repo, mockNotifier,logger)
 	gin.SetMode(gin.TestMode) //setting so that we don't get debug logs during testing
 
-	return InitRoutes(svc)
+	return InitRoutes(svc,logger)
 }
 
 func TestSignupAPI_SQLite(t *testing.T) {
