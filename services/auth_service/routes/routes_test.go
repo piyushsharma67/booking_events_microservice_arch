@@ -2,12 +2,14 @@ package routes
 
 import (
 	"bytes"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/databases"
+	"github.com/piyushsharma67/movie_booking/services/auth_service/logger"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/repository"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/service"
 	"github.com/stretchr/testify/assert"
@@ -18,9 +20,10 @@ func setupSharedTestServer() *gin.Engine {
 
 	db := databases.NewSqliteDB(sqlDB)
 	repo := repository.NewUserRepository(db)
+	logger:=logger.NewSlogLogger("auth_service_test","development",slog.LevelInfo)
 
 	mockNotifier := &service.MockNotifier{}
-	svc := service.NewAuthService(repo, mockNotifier)
+	svc := service.NewAuthService(repo, mockNotifier,logger)
 	gin.SetMode(gin.TestMode) //setting so that we don't get debug logs during testing
 
 	return InitRoutes(svc)

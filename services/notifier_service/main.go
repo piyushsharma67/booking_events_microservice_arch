@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/smtp"
 	"os"
 	"strings"
@@ -20,7 +21,17 @@ type Notification struct {
 	Body    string `json:"body"`
 }
 
+var logger *slog.Logger
+
+func initLogger() {
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelInfo, // change via env
+	})
+	logger = slog.New(handler)
+}
+
 func main() {
+	initLogger()
 	loadEnv()
 	fmt.Println("Starting Notifier Service...")
 	// RabbitMQ connection
@@ -30,26 +41,32 @@ func main() {
 		getEnv("RABBITMQ_HOST"),
 		getEnv("RABBITMQ_PORT"),
 	)
+	logger.Info("rabbitmq url",
+		"url", rabbitURL,
+	)
 
 	var conn *amqp.Connection
 	var err error
 
 	for {
-		log.Println("🔄 Trying to connect to RabbitMQ...")
+		logger.Info("connecting to rabbitmq",
+			"host", getEnv("RABBITMQ_HOST"),
+		)
 		conn, err = amqp.Dial(rabbitURL)
 		if err != nil {
-			log.Println("RabbitMQ not ready, retrying in 5 seconds...")
+			logger.Error("Failed to connect to RabbitMQ, retrying in 5 seconds...", slog.String("error", err.Error()))
 			time.Sleep(5 * time.Second)
 			continue
 		}
 		break
 	}
 
-	log.Println("✅ Connected to RabbitMQ")
+	logger.Info("connected to rabbitmq")
 	defer conn.Close()
 
 	ch, err := conn.Channel()
 	if err != nil {
+		logger.Error("Failed to open channel", slog.String("error", err.Error()))
 		log.Fatalf("Failed to open channel: %v", err)
 	}
 	defer ch.Close()
@@ -66,6 +83,7 @@ func main() {
 		nil,
 	)
 	if err != nil {
+		logger.Error("Failed to declare queue:", slog.String("error", err.Error()))
 		log.Fatalf("Failed to declare queue: %v", err)
 	}
 
@@ -79,25 +97,51 @@ func main() {
 		nil,
 	)
 	if err != nil {
+		logger.Error("Failed to register consumer:", slog.String("error", err.Error()))
 		log.Fatalf("Failed to register consumer: %v", err)
 	}
 
 	forever := make(chan bool)
-	log.Println("Notification service is listening...")
+	logger.Info("Notification service is listening...")
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received message: %s", d.Body)
+			msgID := time.Now().UnixNano()
+			logger.Info("message received",
+				"msg_id", msgID,
+				"size", len(d.Body),
+				"body", string(d.Body),
+			)
 			var notif Notification
 			if err := json.Unmarshal(d.Body, &notif); err != nil {
 				log.Printf("Failed to parse message: %v", err)
 				continue
 			}
-			fmt.Println("notification is", notif)
+			logger.Info("notification received",
+				"notification", notif,
+			)
+			logger.Info("sending email",
+				"msg_id", msgID,
+				"to", notif.To,
+				"subject", notif.Subject,
+			)
+
+			start := time.Now()
+			duration := time.Since(start)
 			if err := sendEmail(notif); err != nil {
-				log.Printf("Failed to send email2: %v", err)
+				logger.Error("email send failed",
+					"msg_id", msgID,
+					"to", notif.To,
+					"error", err,
+					"duration_ms", duration.Milliseconds(),
+				)
+				continue
 			} else {
-				log.Printf("Email sent to %s", notif.To)
+				logger.Info("email sent successfully",
+					"msg_id", msgID,
+					"to", notif.To,
+					"duration_ms", duration.Milliseconds(),
+				)
 			}
 		}
 	}()

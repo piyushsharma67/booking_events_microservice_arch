@@ -23,8 +23,11 @@ func GinHandler(e endpoint.Endpoint, newRequest func() interface{}) gin.HandlerF
 			return
 		}
 
+		// ✅ Extract context (with request_id inside)
+		ctx := c.Request.Context()
+
 		// Call the Go Kit endpoint
-		resp, err := e(c, request)
+		resp, err := e(ctx, request)
 		if err != nil {
 			if errors.Is(err, context.DeadlineExceeded) {
 				c.JSON(http.StatusRequestTimeout, gin.H{"error": "request timed out"})

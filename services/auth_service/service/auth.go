@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/piyushsharma67/movie_booking/services/auth_service/databases"
+	"github.com/piyushsharma67/movie_booking/services/auth_service/logger"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/models"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/repository"
 	"github.com/piyushsharma67/movie_booking/services/auth_service/utils"
@@ -17,10 +18,11 @@ import (
 type authService struct {
 	repo *repository.UserRepository
 	notifier Notifier
+	logger logger.Logger
 }
 
-func NewAuthService(repo *repository.UserRepository,notifier Notifier) AuthService {
-	return &authService{repo: repo,notifier: notifier}
+func NewAuthService(repo *repository.UserRepository,notifier Notifier,logger logger.Logger) AuthService {
+	return &authService{repo: repo,notifier: notifier,logger: logger}
 }
 
 func (s *authService) SignUp(ctx context.Context, user models.User) (models.User, error) {
@@ -65,6 +67,12 @@ func (s *authService) SignUp(ctx context.Context, user models.User) (models.User
 }
 
 func (s *authService) Login(ctx context.Context, user models.User) (models.User, error) {
+	// reqID, _ := ctx.Value("request_id").(string)
+
+	// s.logger.Info("login request",
+	// 	"request_id", reqID,
+	// 	"user", req.Username,
+	// )
 	// 1. Fetch user from DB
 	userDB, err := s.repo.GetUserByEmail(ctx, user.Email)
 	if err != nil {

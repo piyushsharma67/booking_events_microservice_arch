@@ -29,6 +29,7 @@ services:
       RABBITMQ_PASSWORD: guest
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+      RABBITMQ_QUEUE: notifications
   
   auth-db:
     image: postgres:16
