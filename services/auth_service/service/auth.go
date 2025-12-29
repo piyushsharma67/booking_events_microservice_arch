@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/piyushsharma67/events_booking/services/auth_service/databases"
 	"github.com/piyushsharma67/events_booking/services/auth_service/logger"
 	"github.com/piyushsharma67/events_booking/services/auth_service/models"
 	"github.com/piyushsharma67/events_booking/services/auth_service/repository"
@@ -23,11 +22,8 @@ func NewAuthService(repo *repository.UserRepository, notifier Notifier, logger l
 	return &authService{repo: repo, notifier: notifier, logger: logger}
 }
 
-func (s *authService) SignUp(ctx context.Context, user models.User) (models.User, error) {
+func (s *authService) SignUp(ctx context.Context, user models.CreateUserRequest) (*models.CreateUserRequest, error) {
 
-	if user.Email=="" || user.Password=="" || user.Name==""{
-		return models.User{},errors.New("User Name,Email and Password are required")
-	}
 	// 1. Hash password
 	log := s.logger.WithContext(ctx)
 
@@ -36,36 +32,35 @@ func (s *authService) SignUp(ctx context.Context, user models.User) (models.User
 	)
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	// 2. Prepare DB model
-	userDB := &databases.User{
-		Name:         user.Name,
-		Email:        user.Email,
-		PasswordHash: hashedPassword,
-		Role:         "user",
+	user.PasswordHash = hashedPassword
+	userDB, err := models.MapCreateRequestToDocument(&user)
+
+	if err != nil {
+		return nil, err
 	}
 
 	// 3. Insert into DB
 	if err := s.repo.InsertUser(ctx, userDB); err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	// 4. Generate JWT
 	token, err := utils.GenerateJWT(
-		userDB.ID,
+		userDB.ID.String(),
 		userDB.Email,
 		userDB.Role,
 		os.Getenv("JWT_SECRET"),
 	)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	// 5. Return API response (NO password/hash)
-	return models.User{
-		ID:    userDB.ID,
+	return &models.CreateUserRequest{
+		ID:    userDB.ID.String(),
 		Name:  userDB.Name,
 		Email: userDB.Email,
 		Role:  userDB.Role,
@@ -73,7 +68,7 @@ func (s *authService) SignUp(ctx context.Context, user models.User) (models.User
 	}, nil
 }
 
-func (s *authService) Login(ctx context.Context, user models.User) (models.User, error) {
+func (s *authService) Login(ctx context.Context, user models.CreateUserRequest) (*models.CreateUserRequest, error) {
 	reqID, _ := ctx.Value("request_id").(string)
 
 	s.logger.Info("login request",
@@ -83,33 +78,33 @@ func (s *authService) Login(ctx context.Context, user models.User) (models.User,
 	// 1. Fetch user from DB
 	userDB, err := s.repo.GetUserByEmail(ctx, user.Email)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	// 2. Compare password
 	if err := utils.CheckPassword(user.Password, userDB.PasswordHash); err != nil {
-		return models.User{}, errors.New("invalid credentials")
+		return nil, errors.New("invalid credentials")
 	}
 
 	// 3. Generate JWT
 	token, err := utils.GenerateJWT(
-		userDB.ID,
+		userDB.ID.String(),
 		userDB.Email,
 		userDB.Role,
 		os.Getenv("JWT_SECRET"),
 	)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	err = s.notifier.SendNotification(userDB.Email, "Login Alert", fmt.Sprintf("Hi %s, You have successfully logged in.", userDB.Name))
 
 	if err != nil {
-		return models.User{}, nil
+		return nil, nil
 	}
 	// 4. Return response (NO password/hash)
-	return models.User{
-		ID:    userDB.ID,
+	return &models.CreateUserRequest{
+		ID:    userDB.ID.String(),
 		Name:  userDB.Name,
 		Email: userDB.Email,
 		Role:  userDB.Role,
@@ -117,7 +112,6 @@ func (s *authService) Login(ctx context.Context, user models.User) (models.User,
 	}, nil
 }
 
-func (s *authService) Notifier(ctx context.Context, user models.User) error {
-	fmt.Println("i am called")
+func (s *authService) Notifier(ctx context.Context, user models.CreateUserRequest) error {
 	return s.notifier.SendNotification(user.Email, "Welcome", fmt.Sprintf("Hi %s Welome to the Booking Application", user.Name))
 }

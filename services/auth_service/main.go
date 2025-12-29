@@ -19,12 +19,9 @@ import (
 func main() {
 	logger := logger.NewSlogFileLogger("auth_service", "development", "./logs/auth_service/auth.log", slog.LevelInfo)
 
-	// 1️⃣ Initialize low-level DB (needs Close)
-	pgxpool, queries := databases.InitPostgres()
-	defer pgxpool.Close()
-	
-	// 2️⃣ Wrap with interface
-	db := databases.NewPostgresDB(queries)
+	dbClient,close:=databases.ConnectMongo()
+	defer close()
+	db:=databases.NewMongoDb(dbClient)
 	fmt.Println("connected to database")
 	
 	repository := repository.NewUserRepository(db)

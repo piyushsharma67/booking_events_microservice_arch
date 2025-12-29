@@ -11,10 +11,10 @@ import (
 
 func MakeSignUpEndpoint(svc service.AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*models.User)
+		req := request.(*models.CreateUserRequest)
 
 		if req.Email == "" || req.Password == "" || req.Name == "" {
-			return models.User{}, errors.New("User Name,Email and Password are required")
+			return models.CreateUserRequest{}, errors.New("User Name,Email and Password are required")
 		}
 
 		user, err := svc.SignUp(ctx, *req)
@@ -27,7 +27,7 @@ func MakeSignUpEndpoint(svc service.AuthService) endpoint.Endpoint {
 
 func MakeLoginEndpoint(svc service.AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*models.User)
+		req := request.(*models.CreateUserRequest)
 		user, err := svc.Login(ctx, *req)
 		if err != nil {
 			return nil, err
@@ -39,7 +39,7 @@ func MakeLoginEndpoint(svc service.AuthService) endpoint.Endpoint {
 
 func MakeValidateEndpoint(svc service.AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*models.User)
+		req := request.(*models.CreateUserRequest)
 		user, err := svc.Login(ctx, *req)
 		if err != nil {
 			return struct {

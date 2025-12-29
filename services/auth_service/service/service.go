@@ -7,7 +7,7 @@ import (
 )
 
 type AuthService interface {
-	SignUp(ctx context.Context, user models.User) (models.User, error)
-	Login(ctx context.Context, user models.User) (models.User, error)
-	Notifier(ctx context.Context, user models.User) error
+	SignUp(ctx context.Context, user models.CreateUserRequest) (*models.CreateUserRequest, error)
+	Login(ctx context.Context, user models.CreateUserRequest) (*models.CreateUserRequest, error)
+	Notifier(ctx context.Context, user models.CreateUserRequest) error
 }

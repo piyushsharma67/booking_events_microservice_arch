@@ -14,13 +14,13 @@ func InitRoutes(srv service.AuthService, logger logger.Logger) *gin.Engine {
 	r := gin.Default()
 	r.Use(middlewares.RequestIDMiddleware())
 
-	r.POST("/signup", transport.GinHandler(endpoint.MakeSignUpEndpoint(srv), func() interface{} { return &models.User{} }, logger))
+	r.POST("/signup", transport.GinHandler(endpoint.MakeSignUpEndpoint(srv), func() interface{} { return &models.CreateUserRequest{} }, logger))
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status": "OK",
 		})
 	})
-	r.POST("/login", transport.GinHandler(endpoint.MakeLoginEndpoint(srv), func() interface{} { return &models.User{} }, logger))
+	r.POST("/login", transport.GinHandler(endpoint.MakeLoginEndpoint(srv), func() interface{} { return &models.CreateUserRequest{} }, logger))
 	r.GET("/validate", transport.ValidateGinHandler(srv, logger))
 
 	return r

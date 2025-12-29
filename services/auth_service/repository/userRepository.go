@@ -1,5 +1,6 @@
 package repository
 
+// its job is to bring the data from the db
 import (
 	"context"
 
@@ -15,29 +16,13 @@ func NewUserRepository(db databases.Database) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) InsertUser(ctx context.Context, user *databases.User) error {
-	userDB := &models.User{
-		ID:           user.ID,
-		Name:         user.Name,
-		Email:        user.Email,
-		PasswordHash: user.PasswordHash,
-		Role:         user.Role,
-	}
-	return r.db.InsertUser(ctx, userDB)
+func (r *UserRepository) InsertUser(ctx context.Context, user *models.UserDocument) error {
+	
+	return r.db.InsertUser(ctx, user)
 }
 
-func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*databases.User, error) {
-	user, err := r.db.GetUserByEmail(ctx, email)
+func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*models.UserDocument, error) {
+	user,err:=r.db.GetUserByEmail(ctx,email)
 
-	if err != nil {
-		return nil, err
-	}
-	userDB := &databases.User{
-		ID:           user.ID,
-		Name:         user.Name,
-		Email:        user.Email,
-		PasswordHash: user.PasswordHash,
-		Role:         user.Role,
-	}
-	return userDB, nil
+	return user,err
 }
