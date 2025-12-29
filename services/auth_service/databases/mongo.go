@@ -47,11 +47,6 @@ func ConnectMongo() (*mongo.Client, context.CancelFunc) {
 	return client, cancel
 }
 
-// type Database interface {
-// 	InsertUser(ctx context.Context, user *models.User) error
-// 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
-// }
-
 func (db *MongoDB) InsertUser(ctx context.Context, user *models.UserDocument) error {
 	_, err := db.collection.InsertOne(ctx, user)
 

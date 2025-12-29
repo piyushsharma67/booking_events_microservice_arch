@@ -27,7 +27,7 @@ func MakeSignUpEndpoint(svc service.AuthService) endpoint.Endpoint {
 
 func MakeLoginEndpoint(svc service.AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*models.CreateUserRequest)
+		req := request.(*models.LoginUserRequest)
 		user, err := svc.Login(ctx, *req)
 		if err != nil {
 			return nil, err
@@ -39,7 +39,7 @@ func MakeLoginEndpoint(svc service.AuthService) endpoint.Endpoint {
 
 func MakeValidateEndpoint(svc service.AuthService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(*models.CreateUserRequest)
+		req := request.(*models.LoginUserRequest)
 		user, err := svc.Login(ctx, *req)
 		if err != nil {
 			return struct {

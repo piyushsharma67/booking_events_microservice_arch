@@ -26,8 +26,10 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      - auth-db
-      - rabbitmq
+      auth-db-mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       JWT_SECRET: sdf23423adsd
       RABBITMQ_USER: appuser
@@ -44,7 +46,7 @@ services:
   
   auth-db-mongo:
     image: mongo:7
-    container_name: mongo
+    container_name: auth-mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo_user
@@ -81,14 +83,14 @@ services:
 
   events-db-mongo:
     image: mongo:7
-    container_name: mongo
+    container_name: events-mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo_user
       MONGO_INITDB_ROOT_PASSWORD: mongo_password
       MONGO_INITDB_DATABASE: events_db
     ports:
-      - "27017:27017"   # optional, only if you want host access
+      - "27018:27017"   # optional, only if you want host access
     volumes:
       - events-db-mongo-data:/data/db
     networks:
@@ -147,33 +149,10 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
       - apps_net
-  
-  zookeeper:
-    image: wurstmeister/zookeeper:3.4.6
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      - apps_net
-
-  kafka:
-    image: wurstmeister/kafka:2.13-2.8.0
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    depends_on:
-      - zookeeper
-    networks:
-      - apps_net
 
 
 volumes:
   auth-db-data:
   rabbitmq-data:
   events-db-mongo-data:
-  
+  auth-db-mongo-data:

@@ -20,7 +20,7 @@ func InitRoutes(srv service.AuthService, logger logger.Logger) *gin.Engine {
 			"status": "OK",
 		})
 	})
-	r.POST("/login", transport.GinHandler(endpoint.MakeLoginEndpoint(srv), func() interface{} { return &models.CreateUserRequest{} }, logger))
+	r.POST("/login", transport.GinHandler(endpoint.MakeLoginEndpoint(srv), func() interface{} { return &models.LoginUserRequest{} }, logger))
 	r.GET("/validate", transport.ValidateGinHandler(srv, logger))
 
 	return r
