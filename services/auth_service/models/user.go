@@ -6,7 +6,7 @@ type CreateUserRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8"`
 	PasswordHash string `json:"password_hash"`
-	Role     string `json:"role" binding:"required"`
+	Role     string `json:"role"`
 	Token string `json:"token"`
 }
 

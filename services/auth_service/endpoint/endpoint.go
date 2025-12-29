@@ -11,9 +11,9 @@ type Endpoints struct {
 	Validate endpoint.Endpoint
 }
 
-func MakeEndpoints(svc service.AuthService) Endpoints {
+func MakeEndpoints(svc service.AuthService,userType string) Endpoints {
 	return Endpoints{
-		SignUp: MakeSignUpEndpoint(svc),
+		SignUp: MakeSignUpEndpoint(svc,userType),
 		Login:  MakeLoginEndpoint(svc),
 	}
 }

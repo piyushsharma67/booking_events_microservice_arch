@@ -10,6 +10,7 @@ import (
 	"github.com/piyushsharma67/events_booking/services/events_service/models"
 	"github.com/piyushsharma67/events_booking/services/events_service/service"
 	"github.com/piyushsharma67/events_booking/services/events_service/transport"
+	"github.com/piyushsharma67/events_booking/services/events_service/utils"
 )
 
 type RoutesStruct struct {
@@ -44,8 +45,9 @@ func InitRoutes(service *service.EventService, logger logger.Logger) *gin.Engine
 		c.Next()
 	})
 
+	r.Use(middleware.SetRoleAndIdFromHeader())
 	organise := r.Group("organize")
-	organise.Use(middleware.RoleAuthMiddleware("organizer"))
+	organise.Use(middleware.RoleAuthMiddleware(utils.ALLOWED_ORGANISER_ROUTE_ROLE))
 
 	organise.POST("/create", transport.GinHandler(endpoints.GenerateEvent(service), func() interface{} { return &models.CreateEventRequest{} }, logger))
 

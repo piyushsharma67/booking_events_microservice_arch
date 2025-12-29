@@ -24,6 +24,15 @@ func GinHandler(
 		request := newRequest()
 		ctx := c.Request.Context()
 
+		// Attach user_id and role from Gin context to Go Kit context
+		if userID := c.GetString("user_id"); userID != "" {
+			ctx = context.WithValue(ctx, "user_id", userID)
+		}
+		if role := c.GetString("role"); role != "" {
+			ctx = context.WithValue(ctx, "role", role)
+		}
+
+
 		if err := c.ShouldBindJSON(request); err != nil {
 			status := http.StatusBadRequest
 

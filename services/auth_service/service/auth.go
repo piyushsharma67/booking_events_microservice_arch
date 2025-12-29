@@ -37,7 +37,7 @@ func (s *authService) SignUp(ctx context.Context, user models.CreateUserRequest)
 
 	if err!=nil{
 		return nil,err
-	}else if userdb.Email!=""{
+	}else if userdb!=nil{
 		return nil,errors.New(utils.USER_ALREADY_EXISTS)
 	}
 
@@ -99,7 +99,7 @@ func (s *authService) Login(ctx context.Context, user models.LoginUserRequest) (
 
 	// 3. Generate JWT
 	token, err := utils.GenerateJWT(
-		userDB.ID.String(),
+		userDB.ID.Hex(),
 		userDB.Email,
 		userDB.Role,
 		os.Getenv("JWT_SECRET"),
