@@ -103,3 +103,15 @@
 {"time":"2025-12-29T18:43:58.543743581Z","level":"INFO","msg":"jwt validated successfully","service":"auth_service","env":"development","status_code":200,"user_id":"6952c5c04b09a0630c81f326","role":"organiser","method":"GET","path":"/validate"}
 {"time":"2025-12-29T18:45:48.50657929Z","level":"INFO","msg":"jwt validated successfully","service":"auth_service","env":"development","status_code":200,"user_id":"6952c5c04b09a0630c81f326","role":"organiser","method":"GET","path":"/validate"}
 {"time":"2025-12-29T18:52:19.274147883Z","level":"INFO","msg":"jwt validated successfully","service":"auth_service","env":"development","status_code":200,"user_id":"6952c5c04b09a0630c81f326","role":"organiser","method":"GET","path":"/validate"}
+{"time":"2025-12-30T09:31:15.702905171Z","level":"INFO","msg":"jwt validated successfully","service":"auth_service","env":"development","status_code":200,"user_id":"6952c5c04b09a0630c81f326","role":"organiser","method":"GET","path":"/validate"}
+{"time":"2025-12-30T11:18:08.652887193Z","level":"INFO","msg":"jwt validated successfully","service":"auth_service","env":"development","status_code":200,"user_id":"6952c5c04b09a0630c81f326","role":"organiser","method":"GET","path":"/validate"}
+{"time":"2025-12-30T11:18:57.500521861Z","level":"INFO","msg":"","service":"auth_service","env":"development"}
+{"time":"2025-12-30T11:19:18.747458015Z","level":"INFO","msg":"db connected","service":"auth_service","env":"development"}
+{"time":"2025-12-30T11:19:31.246251048Z","level":"INFO","msg":"db connected","service":"auth_service","env":"development"}
+{"time":"2025-12-30T11:20:08.700608067Z","level":"INFO","msg":"db connected","service":"auth_service","env":"development"}
+{"time":"2025-12-30T11:20:11.066986188Z","level":"INFO","msg":"db connected","service":"auth_service","env":"development"}
+{"time":"2025-12-30T11:20:35.78933093Z","level":"INFO","msg":"incoming request","service":"auth_service","env":"development","method":"POST","path":"/login"}
+{"time":"2025-12-30T11:20:35.789379714Z","level":"INFO","msg":"login request","service":"auth_service","env":"development","request_id":"a2f35985c4c5225c29d2e78a2ba21a49","user":"piyush67.sharma@gmail.com"}
+{"time":"2025-12-30T11:20:35.869126249Z","level":"INFO","msg":"request completed","service":"auth_service","env":"development","status_code":200,"method":"POST","path":"/login"}
+{"time":"2025-12-30T11:21:22.061072107Z","level":"INFO","msg":"db connected","service":"auth_service","env":"development"}
+{"time":"2025-12-30T11:21:25.525369856Z","level":"INFO","msg":"db connected","service":"auth_service","env":"development"}

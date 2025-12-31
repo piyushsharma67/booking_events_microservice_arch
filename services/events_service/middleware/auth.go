@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -35,8 +34,6 @@ func AuthMiddleWare() gin.HandlerFunc {
 func RoleAuthMiddleware(allowedRoles string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		roleAny, exists := c.Get("role")
-		fmt.Println("roleAny:", roleAny, "exists:", exists)
-		fmt.Println("allowedRoles:", allowedRoles)
 
 		if !exists || roleAny == "" {
 			c.AbortWithStatus(http.StatusForbidden)
@@ -45,12 +42,11 @@ func RoleAuthMiddleware(allowedRoles string) gin.HandlerFunc {
 
 		role := strings.TrimSpace(roleAny.(string))
 		if role == allowedRoles {
-			fmt.Println("Role matches! proceeding...")
+
 			c.Next()
 			return
 		}
 
-		fmt.Println("Role mismatch! access denied")
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 			"error": "access denied",
 		})
@@ -60,12 +56,12 @@ func RoleAuthMiddleware(allowedRoles string) gin.HandlerFunc {
 func SetRoleAndIdFromHeader() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role := c.GetHeader("X-User-Role")
-		fmt.Println("role parsed in event service is", role)
+
 		if role != "" {
 			c.Set("role", role)
 		}
 		organiserId := c.GetHeader("X-User-ID")
-		fmt.Println("useriD parsed in event service is", organiserId)
+
 		if organiserId != "" {
 			c.Set("user_id", organiserId)
 		}

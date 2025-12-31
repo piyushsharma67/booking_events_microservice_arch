@@ -33,7 +33,7 @@ func initLogger() {
 func main() {
 	initLogger()
 	loadEnv()
-	fmt.Println("Starting Notifier Service...")
+
 	// RabbitMQ connection
 	rabbitURL := fmt.Sprintf("amqp://%s:%s@%s:%s/",
 		getEnv("RABBITMQ_USER"),

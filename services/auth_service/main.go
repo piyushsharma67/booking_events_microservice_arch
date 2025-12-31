@@ -22,7 +22,7 @@ func main() {
 	dbClient,close:=databases.ConnectMongo()
 	defer close()
 	db:=databases.NewMongoDb(dbClient)
-	fmt.Println("connected to database")
+	logger.Info("db connected")
 	
 	repository := repository.NewUserRepository(db)
 	user := os.Getenv("RABBITMQ_USER")

@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"os"
-	"path/filepath"
 )
 
 type slogLogger struct {
@@ -13,18 +12,7 @@ type slogLogger struct {
 
 func NewSlogFileLogger(serviceName, env, path string, level slog.Level) Logger {
 	// Ensure parent directory exists
-	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		panic(err)
-	}
-
-	// Open or create log file
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
-	}
-
-	handler := slog.NewJSONHandler(f, &slog.HandlerOptions{
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: level,
 	})
 

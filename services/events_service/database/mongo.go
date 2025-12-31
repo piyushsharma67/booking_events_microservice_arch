@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -55,7 +54,6 @@ func ConnectMongo() (*mongo.Client, context.CancelFunc) {
 
 func (db *MongoDB) GenerateEvent(ctx context.Context, event *models.EventDocument) (*models.EventDocument, error) {
 	_, err := db.collection.InsertOne(ctx, event)
-	fmt.Println("event is", event)
 	if err != nil {
 		return nil, err
 	}

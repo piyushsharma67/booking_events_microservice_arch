@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/piyushsharma67/events_booking/services/events_service/utils"
@@ -32,7 +31,6 @@ func MapCreateRequestToDocument(
 	}
 
 	now := time.Now()
-	fmt.Println("OrganiserId",organiserId)
 
 	return &EventDocument{
 		ID:          primitive.NewObjectID(),

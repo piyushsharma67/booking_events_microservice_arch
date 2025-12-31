@@ -1,7 +1,5 @@
 package service
 
-import "fmt"
-
 type MockNotifier struct {
 	SentMessages []Notification
 }
@@ -18,6 +16,5 @@ func (m *MockNotifier) SendNotification(to string, subject string, body string) 
 		Subject: subject,
 		Body:    body,
 	})
-	fmt.Printf("Mock send to %s with subject %s\n", to, subject) // optional debug
 	return nil
 }
