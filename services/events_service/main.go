@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/piyushsharma67/events_booking/services/events_service/database"
+	"github.com/piyushsharma67/events_booking/services/events_service/infra"
 	"github.com/piyushsharma67/events_booking/services/events_service/logger"
 	"github.com/piyushsharma67/events_booking/services/events_service/que"
 	"github.com/piyushsharma67/events_booking/services/events_service/repository"
@@ -70,8 +71,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	redisClient:= infra.NewRedisClient()
 	// ---------- Service ----------
-	srv := service.GetEventService(*repo, publisher)
+	srv := service.GetEventService(*repo, publisher,redisClient)
 
 	// ---------- HTTP ----------
 	r := routes.InitRoutes(srv, logger)

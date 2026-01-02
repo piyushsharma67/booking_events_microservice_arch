@@ -38,6 +38,6 @@ func (r *EventRepository) UpdateEventByAdmin(ctx context.Context, event *models.
 	return r.db.UpdateEvent(ctx, event)
 }
 
-func (r *EventRepository) GetEvent(ctx context.Context, id any) (*models.EventDocument, error) {
-	return r.db.GetEvent(ctx, 1)
+func (r *EventRepository) GetEvent(ctx context.Context, id interface{}) (*models.EventDocument, error) {
+	return r.db.GetEvent(ctx, id)
 }

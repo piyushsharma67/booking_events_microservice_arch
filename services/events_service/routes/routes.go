@@ -51,5 +51,11 @@ func InitRoutes(service *service.EventService, logger logger.Logger) *gin.Engine
 
 	organise.POST("/create", transport.GinHandler(endpoints.GenerateEvent(service), func() interface{} { return &models.CreateEventRequest{} }, logger))
 
+	r.Use(middleware.SetRoleAndIdFromHeader())
+	user:=r.Group(utils.ALLOWED_USER_ROUTE_ROLE)
+	user.Use(middleware.RoleAuthMiddleware(utils.ALLOWED_USER_ROUTE_ROLE))
+
+	user.GET("/get_event_details",transport.GinHandler(endpoints.GetEventDetails(service), func() interface{} { return &models.GetEventDetailtRequest{} }, logger))
+
 	return r
 }

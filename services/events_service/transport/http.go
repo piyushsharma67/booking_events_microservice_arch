@@ -32,8 +32,16 @@ func GinHandler(
 			ctx = context.WithValue(ctx, "role", role)
 		}
 
+		// ✅ Bind based on HTTP method
+		var err error
+		switch c.Request.Method {
+		case http.MethodGet:
+			err = c.ShouldBindQuery(request)
+		default:
+			err = c.ShouldBindJSON(request)
+		}
 
-		if err := c.ShouldBindJSON(request); err != nil {
+		if err != nil {
 			status := http.StatusBadRequest
 
 			msg := err.Error()

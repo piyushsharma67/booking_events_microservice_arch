@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/piyushsharma67/events_booking/services/events_service/models"
@@ -57,5 +58,26 @@ func GenerateEvent(srv *service.EventService) endpoint.Endpoint {
 		}
 
 		return genEvent, nil
+	}
+}
+
+func GetEventDetails(srv *service.EventService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		event := request.(*models.GetEventDetailtRequest)
+		fmt.Println("EventID:", event.EventID)
+		// Get organizer ID from context
+		organizerID, ok := ctx.Value("user_id").(string)
+		if !ok || organizerID == "" {
+			return nil, errors.New("organizer ID not found in context")
+		}
+
+		eventDetail, err := srv.GetEventDetails(ctx, event, organizerID)
+		fmt.Println("event details are",eventDetail)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return eventDetail, nil
 	}
 }

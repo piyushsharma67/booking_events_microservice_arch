@@ -47,3 +47,14 @@ func MapCreateRequestToDocument(
 		OrganizerID: organiserId,
 	}, nil
 }
+
+func MapSeatingRows(rows []SeatingRow) []SeatingRowResponse {
+	result := make([]SeatingRowResponse, 0, len(rows))
+	for _, r := range rows {
+		result = append(result, SeatingRowResponse{
+			RowLabel: r.RowLabel,
+			Seats:    r.SeatCount,
+		})
+	}
+	return result
+}

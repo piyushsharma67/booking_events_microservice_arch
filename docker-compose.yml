@@ -40,7 +40,7 @@ services:
       RABBITMQ_QUEUE_SEATS: seats
       SERVER_PORT: 8001
       MONGO_URI: mongodb://mongo_user:mongo_password@auth-db-mongo:27017/auth_db?authSource=admin
-      DATABASE_NAME: UTH_db
+      DATABASE_NAME: auth_db
       DATABASE_COLLECTION: auth_collection
     networks:
       - apps_net
@@ -127,11 +127,15 @@ services:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_QUEUE_SEATS: seats
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_TTL_SECONDS: 300
     networks:
       - apps_net
     depends_on:
       - events-db-mongo
       - rabbitmq
+      - redis
 
   events-db-mongo:
     image: mongo:7
@@ -153,6 +157,14 @@ services:
       timeout: 5s
       retries: 5
     command: ["mongod", "--quiet"]
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"   # optional (only if you want host access)
+    networks:
+      - apps_net
 
   notifier-service:
     build: ./services/notifier_service
